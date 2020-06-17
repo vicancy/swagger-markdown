@@ -2,7 +2,7 @@ const inArray = require('../lib/inArray');
 const transformResponses = require('./pathResponses');
 const transformParameters = require('./pathParameters');
 const security = require('./security');
-
+const anchor = require('../lib/anchor');
 /**
  * Allowed methods
  * @type {string[]}
@@ -14,9 +14,6 @@ module.exports = (path, data, parameters) => {
   let pathParameters = null;
 
   if (path && data) {
-    // Make path as a header
-    res.push(`### ${path}\n`);
-
     // Check if parameter for path are in the place
     if ('parameters' in data) {
       pathParameters = data.parameters;
@@ -25,14 +22,16 @@ module.exports = (path, data, parameters) => {
     // Go further method by methods
     Object.keys(data).map(method => {
       if (inArray(method, ALLOWED_METHODS)) {
-        // Set method as a subheader
-        res.push(`#### ${method.toUpperCase()}`);
+        // Make summary as a header
         const pathInfo = data[method];
+        const summary = pathInfo.summary || `${method} ${path}`;
+        const name = anchor(`${method} ${summary}`);
 
-        // Set summary
-        if ('summary' in pathInfo) {
-          res.push(`##### Summary:\n\n${pathInfo.summary}\n`);
-        }
+        // add an anchor for each method
+        res.push(`<a name="${name}"></a>`);
+        res.push(`### ${summary}\n`);
+
+        res.push(`\`${method.toUpperCase()} ${path}\``);
 
         // Set description
         if ('description' in pathInfo) {

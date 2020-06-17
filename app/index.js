@@ -9,6 +9,7 @@ const transformSecurityDefinitions = require('./transformers/securityDefinitions
 const transformExternalDocs = require('./transformers/externalDocs');
 const transformDefinition = require('./transformers/definitions');
 const packageInfo = require('../package.json');
+const toc = require('./transformers/toc');
 
 const parser = new ArgumentParser({
   addHelp: true,
@@ -65,6 +66,8 @@ if (args.input) {
 
     // Process Paths
     if ('paths' in inputDoc) {
+      // add toc for paths
+      document.push(toc(inputDoc.paths));
       Object.keys(inputDoc.paths).forEach(path => document.push(transformPath(
         path,
         inputDoc.paths[path],
